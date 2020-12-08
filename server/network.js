@@ -1,4 +1,8 @@
-const ID_STRSET = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+const TrainTask = require("./task").TrainTask
+const response = require("./response")
+const util = require("./util")
+
 const ID_LENGTH = 8;
 
 const CLIENT_TYPE = {
@@ -15,9 +19,9 @@ exports.Session = class Session {
 
     // セッションに参加
     join(client, role) {
-        // ID_LENGTH 文字のランダムな文字列を生成
-        // 参考元: https://qiita.com/fukasawah/items/db7f0405564bdc37820e
-        id = Array.from(Array(ID_LENGTH)).map(() => ID_STRSET[Math.floor(Math.random() * ID_STRSET.length)]).join("");
+
+        // length 文字のランダムな文字列を生成
+        id = util.makeRandomStr(ID_LENGTH)
 
         // idと関連付けてクライアントを保存
         this.clients[id] = { obj: client, role: role };
@@ -30,19 +34,21 @@ exports.Session = class Session {
         this.IDList[CLIENT_TYPE.trainer].forEach((id) => this[id].send(message), this.IDList[CLIENT_TYPE.trainer])
     }
 
-    //学習タスクを開始 "1-Trainer 1-Task"が前提なのでタスクは辞書で管理
+    //学習タスクを開始
     startTrainTasks(trainerID, taskName, params) {
-        if (typeof Object.keys(this.IDList[CLIENT_TYPE.trainer]).find((k) => k === trainerID) != "undefined") {
-            this.trainTasks[trainerID] = [];
+        if (typeof this.IDList[CLIENT_TYPE.trainer].find((k) => k === trainerID) == "undefined") {
+            return response.errorResponse.unexpectedIDError;
         }
+        taskID = util.makeRandomStr(ID_LENGTH)
+        this.trainTasks[taskID] = new TrainTask(taskName, params, trainerID);
     }
 
-    appendTrainTasks() {
-
+    updateTrainTasks(taskID, params) {
+        this.trainTasks[taskID].update(params)
     }
 
-    endTrainTasks() {
-
+    endTrainTasks(taskID, status, params) {
+        this.trainTasks[taskID].end(status, params)
     }
 };
 
