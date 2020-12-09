@@ -24,9 +24,10 @@ exports.Session = class Session {
         id = util.makeRandomStr(ID_LENGTH)
 
         // idと関連付けてクライアントを保存
-        this.clients[id] = { obj: client, role: role };
+        this.clients[id] = { obj: client, role: role, taskID: null };
         this.IDList[role].append(id);
         return id;
+
     }
 
     // 各observerにメッセージ送信
@@ -36,11 +37,12 @@ exports.Session = class Session {
 
     //学習タスクを開始
     startTrainTasks(trainerID, taskName, params) {
-        if (typeof this.IDList[CLIENT_TYPE.trainer].find((k) => k === trainerID) == "undefined") {
-            return response.errorResponse.unexpectedIDError;
+        if (this.IDList[CLIENT_TYPE.trainer].include(trainerID)) {
+            return null;
         }
         taskID = util.makeRandomStr(ID_LENGTH)
         this.trainTasks[taskID] = new TrainTask(taskName, params, trainerID);
+        this.clients[trainerID].taskID = taskID
     }
 
     updateTrainTasks(taskID, params) {
@@ -49,6 +51,19 @@ exports.Session = class Session {
 
     endTrainTasks(taskID, status, params) {
         this.trainTasks[taskID].end(status, params)
+        this.clients[trainerID].taskID = null
+    }
+
+    getTaskList() {
+        return response.normalResponse(Object.keys(this.trainTasks))
+    }
+
+    getTask(taskID) {
+        if (taskID in this.trainTasks) {
+            return response.normalResponse(this.trainTasks[taskID].data());
+        } else {
+            return response.errorResponse.unexpectedTrainIDError;
+        }
     }
 };
 

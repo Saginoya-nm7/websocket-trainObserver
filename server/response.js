@@ -1,6 +1,7 @@
 exports.errorResponse = {
     messageTypeError: { status: "Error", data: { name: "MessageTypeError", detail: "Unexpected message type." } },
-    unexpectedIDError: { status: "Error", data: { name: "UnexpectedIDError", detail: "Unexpected Client ID." } },
+    unexpectedClientIDError: { status: "Error", data: { name: "UnexpectedClientIDError", detail: "Unexpected Client ID." } },
+    unexpectedTrainIDError: { status: "Error", data: { name: "UnexpectedTrainIDError", detail: "Unexpected Train ID." } },
 }
 
 exports.normalResponse = (data) => ({ status: "OK", data: data })

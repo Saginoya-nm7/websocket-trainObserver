@@ -35,7 +35,7 @@ exports.TrainTask = class TrainTask {
             name: this.name,
             status: this.status,
             trainer: this.trainerID,
-            epoch: this.progress_epoch + "/" + this.params.epochs,
+            epoch: this.progress_epoch,
             params: this.params,
             history: this.history
         }
