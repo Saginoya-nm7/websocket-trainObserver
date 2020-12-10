@@ -10,6 +10,12 @@ const CLIENT_TYPE = {
     trainer: "trainer"
 }
 
+const result = {
+    taskIDNotFound: -1
+}
+
+exports.result = result;
+
 exports.Session = class Session {
     constructor() {
         this.clients = {};
@@ -55,15 +61,14 @@ exports.Session = class Session {
     }
 
     getTaskList() {
-        return response.normalResponse(Object.keys(this.trainTasks))
+        return Object.keys(this.trainTasks)
     }
 
     getTask(taskID) {
         if (taskID in this.trainTasks) {
-            return response.normalResponse(this.trainTasks[taskID].data());
+            return this.trainTasks[taskID].data();
         } else {
-            return response.errorResponse.unexpectedTrainIDError;
+            return result.taskIDNotFound;
         }
     }
 };
-

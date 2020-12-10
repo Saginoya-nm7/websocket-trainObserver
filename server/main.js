@@ -1,4 +1,3 @@
-const { WSAESHUTDOWN } = require("constants");
 const ws = require("ws");
 const wsNetwork = require("./network")
 const messageType = require("./messageType").messageType
@@ -51,10 +50,17 @@ server.on("connection", (ws) => {
 
             //学習タスク一覧要求時
             case messageType.getTrainList:
+                ws.send(wsSession.getTaskList())
                 break;
 
             //学習タスク詳細取得時
             case messageType.getTrainData:
+                res = wsSession.getTask(jData.data.trainerID)
+                if (res == wsNetwork.result.taskIDNotFound) {
+                    ws.send(response.errorResponse.unexpectedTrainIDError)
+                } else {
+                    ws.send(response.normalResponse(res))
+                }
                 break;
 
             // それ以外のmessageTypeが与えられたとき
@@ -62,6 +68,5 @@ server.on("connection", (ws) => {
                 ws.send(response.errorResponse.messageTypeError)
                 break
         }
-
     });
 });
