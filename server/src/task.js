@@ -1,4 +1,5 @@
 const util = require("./util")
+const dateformat = require("dateformat")
 
 const TASK_STATUS = {
     progress: "Progress",
@@ -13,20 +14,24 @@ exports.TrainTask = class TrainTask {
         this.progress_epoch = 0;
         this.status = TASK_STATUS.progress;
         this.trainerID = trainerID;
-        this.history = new util.defaultDict(Array);
+        this.startTime = dateformat(new Date(), "mm/dd HH:MM:ss")
+        this.history = {
+            "loss": new util.defaultDict(Array),
+            "accuracy": new util.defaultDict(Array),
+        };
     }
 
-    update(result) {
+    update(epoch, result) {
         // 学習状況を更新
-        this.progress_epoch = result.epochs;
-        Object.keys(result).forEach((k) => this.history[k].push(result[k]));
+        this.progress_epoch = epoch;
+        Object.keys(result).forEach((c) => {
+            Object.keys(result[c]).forEach((k) => this.history[c][k].push(result[c][k]))
+        });
     }
 
-    end(status, result) {
+    end(status) {
         // 学習終了
-        this.progress_epoch = epoch;
         this.status = status;
-        Object.keys(result).forEach((k) => this.history[k].push(result[k]));
     }
 
     get data() {
@@ -36,6 +41,7 @@ exports.TrainTask = class TrainTask {
             status: this.status,
             trainer: this.trainerID,
             epoch: this.progress_epoch,
+            startTime: this.startTime,
             params: this.params,
             history: this.history
         }

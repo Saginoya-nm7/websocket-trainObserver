@@ -1,7 +1,9 @@
 exports.errorResponse = {
-    messageTypeError: JSON.stringify({ status: "Error", data: { name: "MessageTypeError", detail: "Unexpected message type." } }),
-    unexpectedClientIDError: JSON.stringify({ status: "Error", data: { name: "UnexpectedClientIDError", detail: "Unexpected Client ID." } }),
-    unexpectedTrainIDError: JSON.stringify({ status: "Error", data: { name: "UnexpectedTrainIDError", detail: "Unexpected Train ID." } }),
+    messageTypeError: JSON.stringify({ type: "Error", data: { name: "MessageTypeError", detail: "Unexpected message type." } }),
+    unexpectedClientIDError: JSON.stringify({ type: "Error", data: { name: "UnexpectedClientIDError", detail: "Unexpected Client ID." } }),
+    unexpectedTrainIDError: JSON.stringify({ type: "Error", data: { name: "UnexpectedTrainIDError", detail: "Unexpected Train ID." } }),
 }
 
-exports.normalResponse = (data) => JSON.stringify({ status: "OK", data: data })
+exports.normalResponse = (type, data) => JSON.stringify({ type: type, data: data })
+
+exports.normalResponse_object = (type, data) => ({ type: type, data: data })
